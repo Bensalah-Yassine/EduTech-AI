@@ -44,7 +44,7 @@ const CompanionForm = () => {
             topic: '',
             voice: '',
             style: '',
-            duration: 15,
+            duration: 10,
         },
     })
 
@@ -201,7 +201,7 @@ const CompanionForm = () => {
                             <FormControl>
                                 <Input
                                     type="number"
-                                    placeholder="15"
+                                    placeholder="e.g. 5, 10, 15 min"
                                     {...field}
                                     className="input"
                                 />
