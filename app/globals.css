@@ -28,7 +28,7 @@
   --accent: rgba(254, 89, 51, 0.15);
   --accent-foreground: #fe5933;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: rgba(255, 255, 255, 0.3);
+  --border: rgba(200, 200, 200, 0.35);
   --input: rgba(255, 255, 255, 0.6);
   --ring: #fe5933;
   --background: oklch(0.985 0 0);
@@ -79,7 +79,7 @@ body {
   --muted-foreground: oklch(0.708 0 0);
   --accent: rgba(254, 89, 51, 0.2);
   --accent-foreground: #ff7d5e;
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.1);
   --input: rgba(30, 41, 59, 0.4);
 }
 
@@ -92,7 +92,8 @@ body {
 
 @layer base {
   * {
-    @apply border-border/80 outline-ring/50;
+    /* Use plain border-border — --border already has transparency baked in */
+    @apply border-border outline-ring;
   }
   body {
     @apply text-foreground transition-colors duration-300;
@@ -106,7 +107,7 @@ body {
 }
 
 @layer components {
-  /* Core Glassmorphism panel class */
+  /* ─── Core Glassmorphism ─── */
   .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
@@ -117,7 +118,12 @@ body {
   }
 
   .glass-panel-hover {
-    @apply glass-panel;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .glass-panel-hover:hover {
     border-color: rgba(254, 89, 51, 0.35);
@@ -125,47 +131,88 @@ body {
     transform: translateY(-3px);
   }
 
+  /* ─── Layout helpers ─── */
   .home-section {
     @apply flex gap-6 justify-between items-start w-full max-lg:flex-col-reverse max-lg:items-center;
   }
   .companions-grid {
     @apply flex flex-wrap gap-6 w-full max-md:justify-center;
   }
-  
-  /* Update existing component classes to apply Glassmorphism */
+
+  /* ─── Glassmorphic components ─── */
   .companion-card {
     @apply flex flex-col rounded-3xl p-5 gap-5 w-full min-lg:max-w-[410px] justify-between glass-panel-hover;
   }
   .subject-badge {
-    @apply bg-black/85 text-white rounded-full text-xs font-semibold px-3 py-1 capitalize backdrop-blur-sm border border-white/10;
+    /* bg-black with 85% opacity via inline rgba */
+    background: rgba(0, 0, 0, 0.85);
+    @apply text-white rounded-full text-xs font-semibold px-3 py-1 capitalize backdrop-blur-sm;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   .companion-bookmark {
-    @apply p-2.5 bg-black/85 hover:bg-primary rounded-full flex items-center justify-center h-fit aspect-square cursor-pointer transition-colors duration-200;
+    background: rgba(0, 0, 0, 0.85);
+    @apply rounded-full flex items-center justify-center h-fit aspect-square cursor-pointer transition-colors duration-200 p-2;
   }
-  
+  .companion-bookmark:hover {
+    background: var(--primary);
+  }
+
   .input {
-    @apply !border-border/60 !bg-white/40 dark:!bg-slate-900/30 focus-visible:!ring-2 focus-visible:!ring-primary/45 focus-visible:!border-primary !w-full !rounded-2xl backdrop-blur-md transition-all duration-200;
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid var(--border) !important;
+    @apply !w-full !rounded-2xl backdrop-blur-md transition-all duration-200 !outline-none;
   }
+  .dark .input {
+    background: rgba(15, 23, 42, 0.3) !important;
+  }
+  .input:focus-visible {
+    border-color: var(--ring) !important;
+    box-shadow: 0 0 0 2px rgba(254, 89, 51, 0.25) !important;
+  }
+
   .rounded-border {
-    @apply rounded-3xl border border-border/80 glass-panel;
+    @apply rounded-3xl glass-panel;
+    /* border already applied by glass-panel */
   }
+
   .cta-section {
-    @apply text-white rounded-3xl px-8 py-10 flex flex-col items-center text-center gap-5 w-1/3 max-lg:w-1/2 max-md:w-full glass-panel;
+    @apply text-white rounded-3xl px-8 py-10 flex flex-col items-center text-center gap-5 w-1/3 max-lg:w-1/2 max-md:w-full;
     background: linear-gradient(135deg, rgba(254, 89, 51, 0.85) 0%, rgba(252, 204, 65, 0.75) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: var(--glass-shadow);
   }
   .cta-badge {
-    @apply bg-white/35 backdrop-blur-md rounded-full px-4 py-1.5 text-white font-bold text-sm border border-white/20;
+    background: rgba(255, 255, 255, 0.35);
+    @apply backdrop-blur-md rounded-full px-4 py-1.5 text-white font-bold text-sm;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   .btn-primary {
-    @apply bg-primary text-white rounded-2xl cursor-pointer px-5 py-2.5 flex items-center justify-center gap-2 font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20 hover:shadow-primary/30;
+    @apply bg-primary text-white rounded-2xl cursor-pointer px-5 py-2.5 flex items-center justify-center gap-2 font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+    box-shadow: 0 4px 14px rgba(254, 89, 51, 0.25);
   }
+  .btn-primary:hover {
+    box-shadow: 0 6px 20px rgba(254, 89, 51, 0.35);
+  }
+
   .navbar {
-    @apply flex items-center justify-between mx-auto w-[90%] max-w-[1300px] px-8 py-3.5 my-5 rounded-3xl glass-panel sticky top-4 z-50;
+    @apply flex items-center justify-between mx-auto w-[90%] max-w-[1300px] px-8 py-3.5 my-5 rounded-3xl sticky top-4 z-50 glass-panel;
   }
   .btn-signin {
-    @apply border border-border/80 bg-white/40 dark:bg-slate-900/30 backdrop-blur-md rounded-2xl px-5 py-2 text-sm font-semibold flex items-center gap-2 cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white hover:border-primary;
+    background: rgba(255, 255, 255, 0.4);
+    @apply backdrop-blur-md rounded-2xl px-5 py-2 text-sm font-semibold flex items-center gap-2 cursor-pointer transition-all duration-200;
+    border: 1px solid var(--border);
   }
+  .dark .btn-signin {
+    background: rgba(15, 23, 42, 0.3);
+  }
+  .btn-signin:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
   .companion-list {
     @apply rounded-3xl px-8 pt-8 pb-10 max-lg:w-full glass-panel;
   }
@@ -174,9 +221,9 @@ body {
   }
 
   .companion-section {
-    @apply border border-border/80 w-2/3 max-sm:w-full flex flex-col gap-4 justify-center items-center rounded-3xl glass-panel p-6;
+    @apply w-2/3 max-sm:w-full flex flex-col gap-4 justify-center items-center rounded-3xl glass-panel p-6;
+    border: 1px solid var(--border);
   }
-
   .companion-avatar {
     @apply size-[250px] flex items-center justify-center rounded-2xl max-sm:size-[120px] mt-4;
   }
@@ -188,11 +235,13 @@ body {
     @apply flex flex-col gap-4 w-1/3 max-sm:w-full max-sm:flex-row;
   }
   .user-avatar {
-    @apply border border-border/80 flex flex-col gap-4 items-center rounded-3xl py-8 max-sm:hidden glass-panel;
+    @apply flex flex-col gap-4 items-center rounded-3xl py-8 max-sm:hidden glass-panel;
+    border: 1px solid var(--border);
   }
 
   .btn-mic {
-    @apply border border-border/80 rounded-3xl flex flex-col gap-2 items-center py-8 max-sm:py-4 cursor-pointer w-full glass-panel-hover;
+    @apply rounded-3xl flex flex-col gap-2 items-center py-8 max-sm:py-4 cursor-pointer w-full glass-panel-hover;
+    border: 1px solid var(--border);
   }
 
   .transcript {
@@ -202,12 +251,19 @@ body {
     @apply overflow-y-auto w-full flex flex-col gap-4 max-sm:gap-2 pr-2 h-full text-xl;
   }
   .transcript-fade {
-    @apply pointer-events-none absolute bottom-0 left-0 right-0 h-28 max-sm:h-16 bg-gradient-to-t from-background/90 via-background/40 to-transparent z-10;
+    @apply pointer-events-none absolute bottom-0 left-0 right-0 h-28 max-sm:h-16 z-10;
+    background: linear-gradient(to top, var(--background), transparent);
   }
 
-  /* Custom Glow blobs */
+  /* ─── Ambient glow blobs ─── */
   .glow-blob {
-    @apply absolute rounded-full filter blur-[80px] opacity-35 mix-blend-multiply dark:mix-blend-screen pointer-events-none animate-pulse;
+    @apply absolute rounded-full pointer-events-none animate-pulse;
+    filter: blur(80px);
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+  }
+  .dark .glow-blob {
+    mix-blend-mode: screen;
   }
 }
 
