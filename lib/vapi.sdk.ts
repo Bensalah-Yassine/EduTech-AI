@@ -1,3 +1,15 @@
-import Vapi from "@vapi-ai/web";
+// Placeholder for VAPI SDK
+// This file is kept for backward compatibility but is no longer used
+// The new api.service.ts should be used instead
 
-export const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_WEB_TOKEN!);
+console.warn("VAPI SDK is deprecated. Please use apiService instead.");
+
+// Export a mock object to prevent breaking changes
+export const vapi = {
+  on: () => {},
+  off: () => {},
+  start: () => {},
+  stop: () => {},
+  isMuted: () => false,
+  setMuted: () => {},
+};

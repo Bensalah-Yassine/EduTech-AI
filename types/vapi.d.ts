@@ -48,3 +48,7 @@ type Message =
   | TranscriptMessage
   | FunctionCallMessage
   | FunctionCallResultMessage;
+// Vapi types - DEPRECATED
+// These types are no longer used as Vapi has been replaced with a generic API service
+
+// Empty file to maintain backward compatibility

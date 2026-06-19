@@ -9,9 +9,16 @@ const NavItems = () => {
     const { isSignedIn } = useAuth();
     
     const authenticatedNavItems = [
-        {label: 'Home', href: '/'}, 
-        {label: 'Companions', href: '/companions'} ,
-        {label: 'My Journey' , href : '/my-journey'}
+        {label: 'Dashboard', href: '/'}, 
+        {label: 'AI Chat', href: '/chat'},
+        {label: 'Flashcards', href: '/flashcards'},
+        {label: 'Mindmap', href: '/mindmap'},
+        {label: 'Quizzes', href: '/quizzes'},
+        {label: 'Notes', href: '/notes'},
+        {label: 'Resources', href: '/resources'},
+        {label: 'Study Groups', href: '/groups'},
+        {label: 'Oral Companions', href: '/companions'},
+        {label: 'My Journey', href: '/my-journey'}
     ];
     
     const publicNavItems = [
@@ -23,7 +30,7 @@ const NavItems = () => {
     
     return (
         <nav className="flex items-center gap-4">
-            {navItems.map(({label , href }) => (
+            {navItems.map(({label, href}) => (
                 <Link 
                     href={href}
                     key={label}
