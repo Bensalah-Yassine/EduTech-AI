@@ -65,9 +65,11 @@ interface Avatar {
   className?: string;
 }
 
+// Updated message interface for generic API usage
 interface SavedMessage {
   role: "user" | "system" | "assistant";
   content: string;
+  timestamp?: Date;
 }
 
 interface CompanionComponentProps {

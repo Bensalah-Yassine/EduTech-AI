@@ -6,8 +6,6 @@ import { revalidatePath } from "next/cache";
 
 export const createCompanion = async (formData: CreateCompanion) => {
     const { userId: author } = await auth();
-    if (!author) throw new Error('Authentication required');
-    
     const supabase = createSupabaseClient();
 
     const { data, error } = await supabase
@@ -21,15 +19,9 @@ export const createCompanion = async (formData: CreateCompanion) => {
 }
 
 export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }: GetAllCompanions) => {
-    const { userId } = await auth();
-    if (!userId) throw new Error('Authentication required');
-    
     const supabase = createSupabaseClient();
 
     let query = supabase.from('companions').select();
-
-    // Only show companions created by the current user
-    query = query.eq('author', userId);
 
     if(subject && topic) {
         query = query.ilike('subject', `%${subject}%`)
@@ -50,41 +42,21 @@ export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }:
 }
 
 export const getCompanion = async (id: string) => {
-    const { userId } = await auth();
-    if (!userId) throw new Error('Authentication required');
-    
     const supabase = createSupabaseClient();
 
     const { data, error } = await supabase
         .from('companions')
         .select()
-        .eq('id', id)
-        .eq('author', userId); // Only allow access to companions created by the current user
+        .eq('id', id);
 
-    if(error) throw new Error(error.message);
-    if (!data || data.length === 0) throw new Error('Companion not found or access denied');
+    if(error) return console.log(error);
 
     return data[0];
 }
 
 export const addToSessionHistory = async (companionId: string) => {
     const { userId } = await auth();
-    if (!userId) throw new Error('Authentication required');
-    
     const supabase = createSupabaseClient();
-    
-    // Verify the companion belongs to the current user before adding to session history
-    const { data: companionCheck, error: companionError } = await supabase
-        .from('companions')
-        .select('id')
-        .eq('id', companionId)
-        .eq('author', userId)
-        .single();
-        
-    if (companionError || !companionCheck) {
-        throw new Error('Companion not found or access denied');
-    }
-    
     const { data, error } = await supabase.from('session_history')
         .insert({
             companion_id: companionId,
@@ -97,14 +69,10 @@ export const addToSessionHistory = async (companionId: string) => {
 }
 
 export const getRecentSessions = async (limit = 10) => {
-    const { userId } = await auth();
-    if (!userId) throw new Error('Authentication required');
-    
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
         .from('session_history')
         .select(`companions:companion_id (*)`)
-        .eq('user_id', userId) // Only get sessions for the current user
         .order('created_at', { ascending: false })
         .limit(limit)
 
@@ -114,14 +82,6 @@ export const getRecentSessions = async (limit = 10) => {
 }
 
 export const getUserSessions = async (userId: string, limit = 10) => {
-    const { userId: currentUserId } = await auth();
-    if (!currentUserId) throw new Error('Authentication required');
-    
-    // Ensure users can only access their own sessions
-    if (currentUserId !== userId) {
-        throw new Error('Access denied');
-    }
-    
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
         .from('session_history')
@@ -136,14 +96,6 @@ export const getUserSessions = async (userId: string, limit = 10) => {
 }
 
 export const getUserCompanions = async (userId: string) => {
-    const { userId: currentUserId } = await auth();
-    if (!currentUserId) throw new Error('Authentication required');
-    
-    // Ensure users can only access their own companions
-    if (currentUserId !== userId) {
-        throw new Error('Access denied');
-    }
-    
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
         .from('companions')
@@ -154,7 +106,7 @@ export const getUserCompanions = async (userId: string) => {
 
     return data;
 }
-/*
+
 export const newCompanionPermissions = async () => {
     const { userId, has } = await auth();
     const supabase = createSupabaseClient();
@@ -184,26 +136,12 @@ export const newCompanionPermissions = async () => {
         return true;
     }
 }
-*/
+
 // Bookmarks
 export const addBookmark = async (companionId: string, path: string) => {
   const { userId } = await auth();
-  if (!userId) throw new Error('Authentication required');
-  
+  if (!userId) return;
   const supabase = createSupabaseClient();
-  
-  // Verify the companion belongs to the current user before bookmarking
-  const { data: companionCheck, error: companionError } = await supabase
-      .from('companions')
-      .select('id')
-      .eq('id', companionId)
-      .eq('author', userId)
-      .single();
-      
-  if (companionError || !companionCheck) {
-      throw new Error('Companion not found or access denied');
-  }
-  
   const { data, error } = await supabase.from("bookmarks").insert({
     companion_id: companionId,
     user_id: userId,
@@ -219,8 +157,7 @@ export const addBookmark = async (companionId: string, path: string) => {
 
 export const removeBookmark = async (companionId: string, path: string) => {
   const { userId } = await auth();
-  if (!userId) throw new Error('Authentication required');
-  
+  if (!userId) return;
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("bookmarks")
@@ -236,24 +173,14 @@ export const removeBookmark = async (companionId: string, path: string) => {
 
 // It's almost the same as getUserCompanions, but it's for the bookmarked companions
 export const getBookmarkedCompanions = async (userId: string) => {
-  const { userId: currentUserId } = await auth();
-  if (!currentUserId) throw new Error('Authentication required');
-  
-  // Ensure users can only access their own bookmarks
-  if (currentUserId !== userId) {
-      throw new Error('Access denied');
-  }
-  
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("bookmarks")
-    .select(`companions:companion_id(*)`) // Notice the (*) to get all the companion data
+    .select(`companions:companion_id (*)`) // Notice the (*) to get all the companion data
     .eq("user_id", userId);
-    
   if (error) {
     throw new Error(error.message);
   }
-  
   // We don't need the bookmarks data, so we return only the companions
   return data.map(({ companions }) => companions);
 };

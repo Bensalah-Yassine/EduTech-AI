@@ -6,7 +6,7 @@ import SubjectFilter from "@/components/SubjectFilter";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-const CompanionsLibrary = async ({ searchParams }: SearchParams) => {
+const CompanionsLibrary = async ({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) => {
     const user = await currentUser();
     
     if (!user) {

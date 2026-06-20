@@ -9,6 +9,8 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
+import Dashboard from "@/components/Dashboard";
+
 const Page = async () => {
     const user = await currentUser();
     
@@ -19,33 +21,35 @@ const Page = async () => {
             const recentSessionsCompanions = await getRecentSessions(10);
 
             return (
-                <main>
-                    <h1>My Companions</h1>
+                <main className="py-6 flex flex-col gap-10">
+                    <Dashboard 
+                        userName={user.firstName || user.username || "Student"} 
+                        userImage={user.imageUrl} 
+                    />
 
-                    <section className="home-section">
-                        {companions.length > 0 ? (
-                            companions.map((companion) => (
-                                <CompanionCard
-                                    key={companion.id}
-                                    {...companion}
-                                    color={getSubjectColor(companion.subject)}
-                                />
-                            ))
-                        ) : (
-                            <div className="text-center py-8">
-                                <p className="text-muted-foreground">No companions created yet. Create your first companion to get started!</p>
-                            </div>
-                        )}
-                    </section>
-
-                    <section className="home-section">
-                        <CompanionsList
-                            title="Recently completed sessions"
-                            companions={recentSessionsCompanions}
-                            classNames="w-2/3 max-lg:w-full"
-                        />
-                        <CTA />
-                    </section>
+                    <div className="w-full flex flex-col gap-6 max-w-[1300px] mx-auto px-4 md:px-0 mt-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-bold tracking-tight">AI Oral Companions</h2>
+                            <Link href="/companions" className="text-sm font-semibold text-primary hover:underline">
+                                View all companions
+                            </Link>
+                        </div>
+                        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {companions.length > 0 ? (
+                                companions.map((companion) => (
+                                    <CompanionCard
+                                        key={companion.id}
+                                        {...companion}
+                                        color={getSubjectColor(companion.subject)}
+                                    />
+                                ))
+                            ) : (
+                                <div className="text-center py-8 glass-panel rounded-3xl col-span-3">
+                                    <p className="text-muted-foreground text-sm">No oral companions created yet. Create one to get started!</p>
+                                </div>
+                            )}
+                        </section>
+                    </div>
                 </main>
             );
         } catch (error) {
@@ -72,7 +76,7 @@ const Page = async () => {
                         width={80}
                         height={80}
                     />
-                    <h1 className="text-4xl font-bold">EduTech AI</h1>
+                    <h1 className="text-4xl font-bold">TeachFlow AI</h1>
                 </div>
                 <h2 className="text-3xl font-bold mb-4 max-w-2xl">
                     Learn Through Voice Conversations with AI Companions
@@ -90,7 +94,7 @@ const Page = async () => {
             {/* Features Section */}
             <section className="py-16 px-4 bg-gray-50">
                 <div className="max-w-6xl mx-auto">
-                    <h3 className="text-2xl font-bold text-center mb-12">Why Choose EduTech AI?</h3>
+                    <h3 className="text-2xl font-bold text-center mb-12">Why Choose TeachFlow AI?</h3>
                     <div className="grid md:grid-cols-3 gap-8">
                         <div className="text-center">
                             <div className="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
