@@ -92,8 +92,9 @@ body {
 
 @layer base {
   * {
-    /* Use plain border-border — --border already has transparency baked in */
-    @apply border-border outline-ring;
+    /* Direct CSS variable usage — avoids Tailwind v4 unknown utility class warnings */
+    border-color: var(--border);
+    outline-color: var(--ring);
   }
   body {
     @apply text-foreground transition-colors duration-300;
@@ -108,7 +109,12 @@ body {
 
 @layer components {
   /* ─── Core Glassmorphism ─── */
-  .glass-panel {
+  .glass-panel,
+  .rounded-border,
+  .navbar,
+  .companion-list,
+  .companion-section,
+  .user-avatar {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -117,7 +123,9 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .glass-panel-hover {
+  .glass-panel-hover,
+  .companion-card,
+  .btn-mic {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -125,7 +133,10 @@ body {
     box-shadow: var(--glass-shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .glass-panel-hover:hover {
+
+  .glass-panel-hover:hover,
+  .companion-card:hover,
+  .btn-mic:hover {
     border-color: rgba(254, 89, 51, 0.35);
     box-shadow: 0 10px 40px 0 rgba(254, 89, 51, 0.08);
     transform: translateY(-3px);
@@ -141,7 +152,7 @@ body {
 
   /* ─── Glassmorphic components ─── */
   .companion-card {
-    @apply flex flex-col rounded-3xl p-5 gap-5 w-full min-lg:max-w-[410px] justify-between glass-panel-hover;
+    @apply flex flex-col rounded-3xl p-5 gap-5 w-full min-lg:max-w-[410px] justify-between;
   }
   .subject-badge {
     /* bg-black with 85% opacity via inline rgba */
@@ -171,7 +182,7 @@ body {
   }
 
   .rounded-border {
-    @apply rounded-3xl glass-panel;
+    @apply rounded-3xl;
     /* border already applied by glass-panel */
   }
 
@@ -197,7 +208,7 @@ body {
   }
 
   .navbar {
-    @apply flex items-center justify-between mx-auto w-[90%] max-w-[1300px] px-8 py-3.5 my-5 rounded-3xl sticky top-4 z-50 glass-panel;
+    @apply flex items-center justify-between mx-auto w-[90%] max-w-[1300px] px-8 py-3.5 my-5 rounded-3xl sticky top-4 z-50;
   }
   .btn-signin {
     background: rgba(255, 255, 255, 0.4);
@@ -214,14 +225,14 @@ body {
   }
 
   .companion-list {
-    @apply rounded-3xl px-8 pt-8 pb-10 max-lg:w-full glass-panel;
+    @apply rounded-3xl px-8 pt-8 pb-10 max-lg:w-full;
   }
   .companion-limit {
     @apply items-center justify-center flex flex-col gap-4 w-full min-2xl:w-1/2 pt-20 text-center;
   }
 
   .companion-section {
-    @apply w-2/3 max-sm:w-full flex flex-col gap-4 justify-center items-center rounded-3xl glass-panel p-6;
+    @apply w-2/3 max-sm:w-full flex flex-col gap-4 justify-center items-center rounded-3xl p-6;
     border: 1px solid var(--border);
   }
   .companion-avatar {
@@ -235,12 +246,12 @@ body {
     @apply flex flex-col gap-4 w-1/3 max-sm:w-full max-sm:flex-row;
   }
   .user-avatar {
-    @apply flex flex-col gap-4 items-center rounded-3xl py-8 max-sm:hidden glass-panel;
+    @apply flex flex-col gap-4 items-center rounded-3xl py-8 max-sm:hidden;
     border: 1px solid var(--border);
   }
 
   .btn-mic {
-    @apply rounded-3xl flex flex-col gap-2 items-center py-8 max-sm:py-4 cursor-pointer w-full glass-panel-hover;
+    @apply rounded-3xl flex flex-col gap-2 items-center py-8 max-sm:py-4 cursor-pointer w-full;
     border: 1px solid var(--border);
   }
 
